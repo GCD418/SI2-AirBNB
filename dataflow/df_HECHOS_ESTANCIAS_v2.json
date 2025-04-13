@@ -87,12 +87,79 @@
 						"type": "DatasetReference"
 					},
 					"name": "dimGuestSatisfaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_private_room",
+						"type": "DatasetReference"
+					},
+					"name": "dimPrivateRoom"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_shared_room",
+						"type": "DatasetReference"
+					},
+					"name": "dimSharedRoom"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_city",
+						"type": "DatasetReference"
+					},
+					"name": "dimCity"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "lookup1"
+				},
+				{
+					"name": "lookup2"
+				},
+				{
+					"name": "lookup3"
+				},
+				{
+					"name": "lookup4"
+				},
+				{
+					"name": "lookup5"
+				},
+				{
+					"name": "lookup6"
+				},
+				{
+					"name": "lookup7"
+				},
+				{
+					"name": "lookup8"
+				},
+				{
+					"name": "lookup9"
+				},
+				{
+					"name": "lookup10"
+				},
+				{
+					"name": "lookup11"
+				},
+				{
+					"name": "lookup12"
+				},
+				{
+					"name": "lookup13"
+				},
+				{
+					"name": "lookup14"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -208,10 +275,113 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     query: 'select * from dbo.dim_guest_satisfaction',",
 				"     format: 'query') ~> dimGuestSatisfaction",
-				"airbnbCsv, dimprice lookup(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"source(output(",
+				"          IsPrivate as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select * from dbo.dim_private_room',",
+				"     format: 'query') ~> dimPrivateRoom",
+				"source(output(",
+				"          IsShared as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select * from dbo.dim_shared_room',",
+				"     format: 'query') ~> dimSharedRoom",
+				"source(output(",
+				"          City as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select * from dbo.dim_city',",
+				"     format: 'query') ~> dimCity",
+				"airbnbCsv, dimprice lookup(airbnbCsv@Price == dimprice@Price,",
 				"     multiple: false,",
 				"     pickup: 'any',",
-				"     broadcast: 'auto')~> lookup1"
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1, dimDay lookup(Day == DayType,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup2",
+				"lookup2, dimRoomType lookup({Room Type} == RoomType,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup3",
+				"lookup3, dimPersonCapacity lookup({Person Capacity} == capacity,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup4",
+				"lookup4, dimCleanlessRating lookup({Cleanliness Rating} == clRating,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup5",
+				"lookup5, dimBedrooms lookup(airbnbCsv@Bedrooms == dimBedrooms@bedrooms,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup6",
+				"lookup6, dimMetroDistance lookup({Metro Distance (km)} == metroDistance,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup7",
+				"lookup7, dimNormalRestaurantIndex lookup({Normalised Restraunt Index} == normalRestaurantIndex,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup8",
+				"lookup8, dimNormalAttractionIndex lookup({Normalised Attraction Index} == normalAttractionIndex,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup9",
+				"lookup9, dimCityDistance lookup({City Center (km)} == cityDistance,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup10",
+				"lookup10, dimGuestSatisfaction lookup({Guest Satisfaction} == guestSatisfaction,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup11",
+				"lookup11, dimPrivateRoom lookup({Private Room} == IsPrivate,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup12",
+				"lookup12, dimSharedRoom lookup({Shared Room} == IsShared,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup13",
+				"lookup13, dimCity lookup(airbnbCsv@City == dimCity@City,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup14",
+				"lookup14 select(mapColumn(",
+				"          Superhost,",
+				"          MultipleRooms = {Multiple Rooms},",
+				"          Business,",
+				"          Price = dimprice@Price,",
+				"          DayType,",
+				"          RoomType,",
+				"          capacity,",
+				"          clRating,",
+				"          bedrooms = dimBedrooms@bedrooms,",
+				"          metroDistance,",
+				"          normalRestaurantIndex,",
+				"          normalAttractionIndex,",
+				"          cityDistance,",
+				"          guestSatisfaction,",
+				"          IsPrivate,",
+				"          IsShared,",
+				"          City = dimCity@City,",
+				"          AttractionIndex = {Attraction Index},",
+				"          RestrauntIndex = {Restraunt Index}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
