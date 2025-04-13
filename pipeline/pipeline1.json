@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_cleanless_rating",
+						"referenceName": "df_dim_bedrooms",
 						"type": "DataFlowReference"
 					},
 					"compute": {
