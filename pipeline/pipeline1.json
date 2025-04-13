@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_normal_attraction_index",
+						"referenceName": "df_city_distance",
 						"type": "DataFlowReference"
 					},
 					"compute": {
