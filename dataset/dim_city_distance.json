@@ -1,0 +1,26 @@
+{
+	"name": "dim_city_distance",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_airbnb",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "dw"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "cityDistance",
+				"type": "decimal",
+				"precision": 23,
+				"scale": 17
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_CITY_DISTANCE"
+		}
+	}
+}

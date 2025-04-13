@@ -1,0 +1,26 @@
+{
+	"name": "dim_normal_attraction_index",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_airbnb",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "dw"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "normalAttractionIndex",
+				"type": "decimal",
+				"precision": 21,
+				"scale": 18
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_NORMAL_ATTRACTION_INDEX"
+		}
+	}
+}
