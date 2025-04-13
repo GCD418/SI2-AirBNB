@@ -1,0 +1,115 @@
+{
+	"name": "hechos_estancias",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_airbnb",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "dw"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_estancia",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "City",
+				"type": "varchar"
+			},
+			{
+				"name": "Price",
+				"type": "decimal",
+				"precision": 26,
+				"scale": 18
+			},
+			{
+				"name": "DayType",
+				"type": "varchar"
+			},
+			{
+				"name": "RoomType",
+				"type": "varchar"
+			},
+			{
+				"name": "IsShared",
+				"type": "bit"
+			},
+			{
+				"name": "IsPrivate",
+				"type": "bit"
+			},
+			{
+				"name": "capacity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "superhost",
+				"type": "bit"
+			},
+			{
+				"name": "multipleRooms",
+				"type": "bit"
+			},
+			{
+				"name": "clRating",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "guestSatisfaction",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "bedrooms",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cityDistance",
+				"type": "decimal",
+				"precision": 23,
+				"scale": 17
+			},
+			{
+				"name": "metroDistance",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 17
+			},
+			{
+				"name": "AttractionIndex",
+				"type": "decimal",
+				"precision": 21,
+				"scale": 18
+			},
+			{
+				"name": "normalAttractionIndex",
+				"type": "decimal",
+				"precision": 21,
+				"scale": 18
+			},
+			{
+				"name": "normalRestaurantIndex",
+				"type": "decimal",
+				"precision": 21,
+				"scale": 18
+			},
+			{
+				"name": "RestaurantIndex",
+				"type": "decimal",
+				"precision": 21,
+				"scale": 18
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "HECHOS_ESTANCIAS"
+		}
+	}
+}

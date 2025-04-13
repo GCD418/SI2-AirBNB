@@ -1,0 +1,24 @@
+{
+	"name": "dim_room_type",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_airbnb",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "dw"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "RoomType",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_ROOM_TYPE"
+		}
+	}
+}

@@ -1,0 +1,26 @@
+{
+	"name": "dim_price",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_airbnb",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "dw"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Price",
+				"type": "decimal",
+				"precision": 26,
+				"scale": 18
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_PRICE"
+		}
+	}
+}
