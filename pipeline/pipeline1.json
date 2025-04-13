@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dim_guest_satisfaction",
+						"referenceName": "df_dim_private_room",
 						"type": "DataFlowReference"
 					},
 					"compute": {

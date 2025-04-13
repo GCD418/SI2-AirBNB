@@ -1,5 +1,5 @@
 {
-	"name": "df_dim_city_distance",
+	"name": "df_dim_private_room",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "dim_city_distance",
+						"referenceName": "dim_private_room",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -39,7 +39,7 @@
 				"          Day as string,",
 				"          {Room Type} as string,",
 				"          {Shared Room} as string,",
-				"          {Private Room} as string,",
+				"          {Private Room} as boolean,",
 				"          {Person Capacity} as string,",
 				"          Superhost as string,",
 				"          {Multiple Rooms} as string,",
@@ -47,7 +47,7 @@
 				"          {Cleanliness Rating} as string,",
 				"          {Guest Satisfaction} as string,",
 				"          Bedrooms as string,",
-				"          {City Center (km)} as decimal(23,17),",
+				"          {City Center (km)} as string,",
 				"          {Metro Distance (km)} as string,",
 				"          {Attraction Index} as string,",
 				"          {Normalised Attraction Index} as string,",
@@ -58,17 +58,17 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
 				"source1 select(mapColumn(",
-				"          cityDistance = {City Center (km)}",
+				"          IsPrivate = {Private Room}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sort(asc(cityDistance, true)) ~> sort1",
-				"sort1 aggregate(groupBy(cityDistance),",
-				"     each(match(name != 'cityDistance'), $$ = first($$))) ~> aggregate1",
+				"select1 sort(asc(IsPrivate, true)) ~> sort1",
+				"sort1 aggregate(groupBy(IsPrivate),",
+				"     each(match(name != 'IsPrivate'), $$ = first($$))) ~> aggregate1",
 				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
-				"          cityDistance as decimal(23,17)",
+				"          IsPrivate as boolean",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -79,7 +79,7 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          cityDistance",
+				"          IsPrivate",
 				"     )) ~> sink1"
 			]
 		}

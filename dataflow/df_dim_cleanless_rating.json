@@ -1,5 +1,5 @@
 {
-	"name": "df_cleanless_rating",
+	"name": "df_dim_cleanless_rating",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -64,7 +64,7 @@
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 sort(asc(clRating, true)) ~> sort1",
 				"sort1 aggregate(groupBy(clRating),",
-				"     each(match(name != 'clRating'), $$ = first($$))) ~> aggregate1",
+				"     each(match(name!='clRating'), $$ = first($$))) ~> aggregate1",
 				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
