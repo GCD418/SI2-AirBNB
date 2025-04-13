@@ -1,0 +1,905 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-ucb-sisinfo-7268517"
+		},
+		"airbnb_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'airbnb'"
+		},
+		"dw_airbnb_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'dw_airbnb'"
+		},
+		"dw_airbnb_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sql-ucb-sisinfo-7268517.database.windows.net"
+		},
+		"dw_airbnb_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "dw-airbnb"
+		},
+		"dw_airbnb_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "gabriel"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/airbnb')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('airbnb_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dw_airbnb')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('dw_airbnb_properties_typeProperties_server')]",
+					"database": "[parameters('dw_airbnb_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('dw_airbnb_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('dw_airbnb_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/airbnb_csv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "datos"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "airbnb.csv",
+						"container": "airbnb"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					},
+					{
+						"name": "Day",
+						"type": "String"
+					},
+					{
+						"name": "Room Type",
+						"type": "String"
+					},
+					{
+						"name": "Shared Room",
+						"type": "String"
+					},
+					{
+						"name": "Private Room",
+						"type": "String"
+					},
+					{
+						"name": "Person Capacity",
+						"type": "String"
+					},
+					{
+						"name": "Superhost",
+						"type": "String"
+					},
+					{
+						"name": "Multiple Rooms",
+						"type": "String"
+					},
+					{
+						"name": "Business",
+						"type": "String"
+					},
+					{
+						"name": "Cleanliness Rating",
+						"type": "String"
+					},
+					{
+						"name": "Guest Satisfaction",
+						"type": "String"
+					},
+					{
+						"name": "Bedrooms",
+						"type": "String"
+					},
+					{
+						"name": "City Center (km)",
+						"type": "String"
+					},
+					{
+						"name": "Metro Distance (km)",
+						"type": "String"
+					},
+					{
+						"name": "Attraction Index",
+						"type": "String"
+					},
+					{
+						"name": "Normalised Attraction Index",
+						"type": "String"
+					},
+					{
+						"name": "Restraunt Index",
+						"type": "String"
+					},
+					{
+						"name": "Normalised Restraunt Index",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_bedrooms')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "bedrooms",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_BEDROOMS"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_city')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "City",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_CITY"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_city_distance')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "cityDistance",
+						"type": "decimal",
+						"precision": 23,
+						"scale": 17
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_CITY_DISTANCE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_cleanless_rating')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "clRating",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_CLEANLESS_RATING"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_day')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DayType",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_DAY"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_guest_satisfaction')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "guestSatisfaction",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_GUEST_SATISFACTION"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_metro_distance')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "metroDistance",
+						"type": "decimal",
+						"precision": 22,
+						"scale": 17
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_METRO_DISTANCE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_normal_attraction_index')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "normalAttractionIndex",
+						"type": "decimal",
+						"precision": 21,
+						"scale": 18
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_NORMAL_ATTRACTION_INDEX"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_normal_restaurant_index')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "normalRestaurantIndex",
+						"type": "decimal",
+						"precision": 21,
+						"scale": 18
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_NORMAL_RESTAURANT_INDEX"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_person_capacity')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "capacity",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_PERSON_CAPACITY"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_price')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Price",
+						"type": "decimal",
+						"precision": 26,
+						"scale": 18
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_PRICE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_private_room')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "IsPrivate",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_PRIVATE_ROOM"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_room_type')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "RoomType",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_ROOM_TYPE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_shared_room')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "IsShared",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_SHARED_ROOM"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hechos_estancias')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dw_airbnb",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "dw"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_estancia",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "City",
+						"type": "varchar"
+					},
+					{
+						"name": "Price",
+						"type": "decimal",
+						"precision": 26,
+						"scale": 18
+					},
+					{
+						"name": "DayType",
+						"type": "varchar"
+					},
+					{
+						"name": "RoomType",
+						"type": "varchar"
+					},
+					{
+						"name": "IsShared",
+						"type": "bit"
+					},
+					{
+						"name": "IsPrivate",
+						"type": "bit"
+					},
+					{
+						"name": "capacity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "superhost",
+						"type": "bit"
+					},
+					{
+						"name": "multipleRooms",
+						"type": "bit"
+					},
+					{
+						"name": "clRating",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "guestSatisfaction",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "bedrooms",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cityDistance",
+						"type": "decimal",
+						"precision": 23,
+						"scale": 17
+					},
+					{
+						"name": "metroDistance",
+						"type": "decimal",
+						"precision": 22,
+						"scale": 17
+					},
+					{
+						"name": "AttractionIndex",
+						"type": "decimal",
+						"precision": 21,
+						"scale": 18
+					},
+					{
+						"name": "normalAttractionIndex",
+						"type": "decimal",
+						"precision": 21,
+						"scale": 18
+					},
+					{
+						"name": "normalRestaurantIndex",
+						"type": "decimal",
+						"precision": 21,
+						"scale": 18
+					},
+					{
+						"name": "RestaurantIndex",
+						"type": "decimal",
+						"precision": 21,
+						"scale": 18
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "HECHOS_ESTANCIAS"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dw_airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_bedrooms')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_bedrooms",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as integer,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          bedrooms = Bedrooms",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(bedrooms, true)) ~> sort1",
+						"sort1 aggregate(groupBy(bedrooms),",
+						"     each(match(name!='bedrooms'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          bedrooms as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          bedrooms",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/airbnb_csv')]",
+				"[concat(variables('factoryId'), '/datasets/dim_bedrooms')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_city')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_city",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          city = City",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(city, true)) ~> sort1",
+						"sort1 aggregate(groupBy(city),",
+						"     each(match(name!='city'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          City as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          City = city",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/airbnb_csv')]",
+				"[concat(variables('factoryId'), '/datasets/dim_city')]"
+			]
+		}
+	]
+}

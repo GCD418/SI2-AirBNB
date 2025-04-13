@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-ucb-sisinfo-7268517"
+		},
+		"airbnb_connectionString": {
+			"value": ""
+		},
+		"dw_airbnb_password": {
+			"value": ""
+		},
+		"dw_airbnb_properties_typeProperties_server": {
+			"value": "sql-ucb-sisinfo-7268517.database.windows.net"
+		},
+		"dw_airbnb_properties_typeProperties_database": {
+			"value": "dw-airbnb"
+		},
+		"dw_airbnb_properties_typeProperties_userName": {
+			"value": "gabriel"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

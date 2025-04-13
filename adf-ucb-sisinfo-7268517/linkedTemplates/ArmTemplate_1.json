@@ -1,0 +1,1137 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-ucb-sisinfo-7268517"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_city_distance')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_city_distance",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as decimal(23,17),",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          cityDistance = {City Center (km)}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(cityDistance, true)) ~> sort1",
+						"sort1 aggregate(groupBy(cityDistance),",
+						"     each(match(name!='cityDistance'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          cityDistance as decimal(23,17)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          cityDistance",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_cleanless_rating')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_cleanless_rating",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as integer,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          clRating = {Cleanliness Rating}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(clRating, true)) ~> sort1",
+						"sort1 aggregate(groupBy(clRating),",
+						"     each(match(name!='clRating'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          clRating as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          clRating",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_day')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_day",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          DayType = Day",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(DayType, true)) ~> sort1",
+						"sort1 aggregate(groupBy(DayType),",
+						"     each(match(name!='DayType'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DayType as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          DayType",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_metro_distance')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_metro_distance",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as decimal(22,17),",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          metroDistance = {Metro Distance (km)}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(metroDistance, true)) ~> sort1",
+						"sort1 aggregate(groupBy(metroDistance),",
+						"     each(match(name!='metroDistance'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          metroDistance as decimal(22,17)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          metroDistance",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_normal_restaurant_index')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_normal_restaurant_index",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as decimal(21,18)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          normalRestaurantIndex = {Normalised Restraunt Index}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(normalRestaurantIndex, true)) ~> sort1",
+						"sort1 aggregate(groupBy(normalRestaurantIndex),",
+						"     each(match(name!='normalRestaurantIndex'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          normalRestaurantIndex as decimal(21,18)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          normalRestaurantIndex",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_price')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_price",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as decimal(26,18),",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          Price",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(Price, true)) ~> sort1",
+						"sort1 aggregate(groupBy(Price),",
+						"     each(match(name!='Price'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Price as decimal(26,18)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Price",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_private_room')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_private_room",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as boolean,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          IsPrivate = {Private Room}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(IsPrivate, true)) ~> sort1",
+						"sort1 aggregate(groupBy(IsPrivate),",
+						"     each(match(name!='IsPrivate'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          IsPrivate as boolean",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          IsPrivate",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_room_type')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_room_type",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          RoomType = {Room Type}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(RoomType, true)) ~> sort1",
+						"sort1 aggregate(groupBy(RoomType),",
+						"     each(match(name!='RoomType'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          RoomType as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          RoomType",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_shared_room')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_shared_room",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as boolean,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          IsShared = {Shared Room}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(IsShared, true)) ~> sort1",
+						"sort1 aggregate(groupBy(IsShared),",
+						"     each(match(name!='IsShared'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          IsShared as boolean",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          IsShared",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_normal_attraction_index')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_normal_attraction_index",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as decimal(21,18),",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          normalAttractionIndex = {Normalised Attraction Index}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(normalAttractionIndex, true)) ~> sort1",
+						"sort1 aggregate(groupBy(normalAttractionIndex),",
+						"     each(match(name!='normalAttractionIndex'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          normalAttractionIndex as decimal(21,18)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          normalAttractionIndex",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_person_capacity')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_person_capacity",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as integer,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          capacity = {Person Capacity}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(capacity, true)) ~> sort1",
+						"sort1 aggregate(groupBy(capacity),",
+						"     each(match(name!='capacity'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          capacity as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          capacity",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dim_guest_satisfaction')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_guest_satisfaction",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as integer,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          guestSatisfaction = {Guest Satisfaction}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(guestSatisfaction, true)) ~> sort1",
+						"sort1 aggregate(groupBy(guestSatisfaction),",
+						"     each(match(name!='guestSatisfaction'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          guestSatisfaction as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_city",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
