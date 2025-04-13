@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_city_distance",
+						"referenceName": "dim_guest_satisfaction",
 						"type": "DataFlowReference"
 					},
 					"compute": {
