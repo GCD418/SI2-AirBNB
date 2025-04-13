@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_dim_normal_restaurant_index",
+						"referenceName": "df_normal_attraction_index",
 						"type": "DataFlowReference"
 					},
 					"compute": {
