@@ -1,0 +1,218 @@
+{
+	"name": "df_HECHOS_ESTANCIAS_v2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "airbnb_csv",
+						"type": "DatasetReference"
+					},
+					"name": "airbnbCsv"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_price",
+						"type": "DatasetReference"
+					},
+					"name": "dimprice"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_day",
+						"type": "DatasetReference"
+					},
+					"name": "dimDay"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_room_type",
+						"type": "DatasetReference"
+					},
+					"name": "dimRoomType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_person_capacity",
+						"type": "DatasetReference"
+					},
+					"name": "dimPersonCapacity"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_cleanless_rating",
+						"type": "DatasetReference"
+					},
+					"name": "dimCleanlessRating"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_bedrooms",
+						"type": "DatasetReference"
+					},
+					"name": "dimBedrooms"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_metro_distance",
+						"type": "DatasetReference"
+					},
+					"name": "dimMetroDistance"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_normal_restaurant_index",
+						"type": "DatasetReference"
+					},
+					"name": "dimNormalRestaurantIndex"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_normal_attraction_index",
+						"type": "DatasetReference"
+					},
+					"name": "dimNormalAttractionIndex"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_city_distance",
+						"type": "DatasetReference"
+					},
+					"name": "dimCityDistance"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_guest_satisfaction",
+						"type": "DatasetReference"
+					},
+					"name": "dimGuestSatisfaction"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "lookup1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          City as string,",
+				"          Price as decimal(26,18),",
+				"          Day as string,",
+				"          {Room Type} as string,",
+				"          {Shared Room} as boolean,",
+				"          {Private Room} as boolean,",
+				"          {Person Capacity} as integer,",
+				"          Superhost as string,",
+				"          {Multiple Rooms} as string,",
+				"          Business as string,",
+				"          {Cleanliness Rating} as integer,",
+				"          {Guest Satisfaction} as integer,",
+				"          Bedrooms as integer,",
+				"          {City Center (km)} as decimal(23,17),",
+				"          {Metro Distance (km)} as decimal(22,17),",
+				"          {Attraction Index} as string,",
+				"          {Normalised Attraction Index} as decimal(21,18),",
+				"          {Restraunt Index} as string,",
+				"          {Normalised Restraunt Index} as decimal(21,18)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> airbnbCsv",
+				"source(output(",
+				"          Price as decimal(26,18)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'Select * from dbo.Dim_price',",
+				"     format: 'query') ~> dimprice",
+				"source(output(",
+				"          DayType as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'Select * from dbo.Dim_day',",
+				"     format: 'query') ~> dimDay",
+				"source(output(",
+				"          RoomType as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'Select * from dbo.dim_room_type',",
+				"     format: 'query') ~> dimRoomType",
+				"source(output(",
+				"          capacity as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'Select * from dbo.dim_person_capacity',",
+				"     format: 'query') ~> dimPersonCapacity",
+				"source(output(",
+				"          clRating as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'Select * from dbo.dim_cleanless_rating',",
+				"     format: 'query') ~> dimCleanlessRating",
+				"source(output(",
+				"          bedrooms as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select * from dbo.dim_bedrooms',",
+				"     format: 'query') ~> dimBedrooms",
+				"source(output(",
+				"          metroDistance as decimal(22,17)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'Select * from dbo.dim_metro_distance',",
+				"     format: 'query') ~> dimMetroDistance",
+				"source(output(",
+				"          normalRestaurantIndex as decimal(21,18)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select * from dbo.dim_normal_restaurant_index',",
+				"     format: 'query') ~> dimNormalRestaurantIndex",
+				"source(output(",
+				"          normalAttractionIndex as decimal(21,18)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select * from dbo.dim_normal_attraction_index',",
+				"     format: 'query') ~> dimNormalAttractionIndex",
+				"source(output(",
+				"          cityDistance as decimal(23,17)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select * from dbo.dim_city_distance',",
+				"     format: 'query') ~> dimCityDistance",
+				"source(output(",
+				"          guestSatisfaction as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select * from dbo.dim_guest_satisfaction',",
+				"     format: 'query') ~> dimGuestSatisfaction",
+				"airbnbCsv, dimprice lookup(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1"
+			]
+		}
+	}
+}
