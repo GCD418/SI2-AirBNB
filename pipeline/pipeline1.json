@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_dim_price",
+						"referenceName": "df_dim_room_type",
 						"type": "DataFlowReference"
 					},
 					"compute": {
