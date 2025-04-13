@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_dim_metro_distance",
+						"referenceName": "df_dim_normal_restaurant_index",
 						"type": "DataFlowReference"
 					},
 					"compute": {
