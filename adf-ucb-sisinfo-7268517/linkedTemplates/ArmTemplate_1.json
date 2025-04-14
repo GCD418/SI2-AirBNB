@@ -1090,15 +1090,938 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"name": "[concat(parameters('factoryName'), '/df_HECHOS_ESTANCIAS_v2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "airbnb_csv",
+								"type": "DatasetReference"
+							},
+							"name": "airbnbCsv"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_price",
+								"type": "DatasetReference"
+							},
+							"name": "dimprice"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_day",
+								"type": "DatasetReference"
+							},
+							"name": "dimDay"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_room_type",
+								"type": "DatasetReference"
+							},
+							"name": "dimRoomType"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_person_capacity",
+								"type": "DatasetReference"
+							},
+							"name": "dimPersonCapacity"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_cleanless_rating",
+								"type": "DatasetReference"
+							},
+							"name": "dimCleanlessRating"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_bedrooms",
+								"type": "DatasetReference"
+							},
+							"name": "dimBedrooms"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_metro_distance",
+								"type": "DatasetReference"
+							},
+							"name": "dimMetroDistance"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_normal_restaurant_index",
+								"type": "DatasetReference"
+							},
+							"name": "dimNormalRestaurantIndex"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_normal_attraction_index",
+								"type": "DatasetReference"
+							},
+							"name": "dimNormalAttractionIndex"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_city_distance",
+								"type": "DatasetReference"
+							},
+							"name": "dimCityDistance"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_guest_satisfaction",
+								"type": "DatasetReference"
+							},
+							"name": "dimGuestSatisfaction"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_private_room",
+								"type": "DatasetReference"
+							},
+							"name": "dimPrivateRoom"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_shared_room",
+								"type": "DatasetReference"
+							},
+							"name": "dimSharedRoom"
+						},
+						{
+							"dataset": {
+								"referenceName": "dim_city",
+								"type": "DatasetReference"
+							},
+							"name": "dimCity"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "hechos_estancias",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "lookup2"
+						},
+						{
+							"name": "lookup3"
+						},
+						{
+							"name": "lookup4"
+						},
+						{
+							"name": "lookup5"
+						},
+						{
+							"name": "lookup6"
+						},
+						{
+							"name": "lookup7"
+						},
+						{
+							"name": "lookup8"
+						},
+						{
+							"name": "lookup9"
+						},
+						{
+							"name": "lookup10"
+						},
+						{
+							"name": "lookup11"
+						},
+						{
+							"name": "lookup12"
+						},
+						{
+							"name": "lookup13"
+						},
+						{
+							"name": "lookup14"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as decimal(26,18),",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as boolean,",
+						"          {Private Room} as boolean,",
+						"          {Person Capacity} as integer,",
+						"          Superhost as boolean,",
+						"          {Multiple Rooms} as boolean,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as integer,",
+						"          {Guest Satisfaction} as integer,",
+						"          Bedrooms as integer,",
+						"          {City Center (km)} as decimal(23,17),",
+						"          {Metro Distance (km)} as decimal(22,17),",
+						"          {Attraction Index} as decimal(21,18),",
+						"          {Normalised Attraction Index} as decimal(21,18),",
+						"          {Restraunt Index} as decimal(21,18),",
+						"          {Normalised Restraunt Index} as decimal(21,18)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> airbnbCsv",
+						"source(output(",
+						"          Price as decimal(26,18)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'Select * from dbo.Dim_price',",
+						"     format: 'query') ~> dimprice",
+						"source(output(",
+						"          DayType as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'Select * from dbo.Dim_day',",
+						"     format: 'query') ~> dimDay",
+						"source(output(",
+						"          RoomType as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'Select * from dbo.dim_room_type',",
+						"     format: 'query') ~> dimRoomType",
+						"source(output(",
+						"          capacity as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'Select * from dbo.dim_person_capacity',",
+						"     format: 'query') ~> dimPersonCapacity",
+						"source(output(",
+						"          clRating as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'Select * from dbo.dim_cleanless_rating',",
+						"     format: 'query') ~> dimCleanlessRating",
+						"source(output(",
+						"          bedrooms as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select * from dbo.dim_bedrooms',",
+						"     format: 'query') ~> dimBedrooms",
+						"source(output(",
+						"          metroDistance as decimal(22,17)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'Select * from dbo.dim_metro_distance',",
+						"     format: 'query') ~> dimMetroDistance",
+						"source(output(",
+						"          normalRestaurantIndex as decimal(21,18)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select * from dbo.dim_normal_restaurant_index',",
+						"     format: 'query') ~> dimNormalRestaurantIndex",
+						"source(output(",
+						"          normalAttractionIndex as decimal(21,18)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select * from dbo.dim_normal_attraction_index',",
+						"     format: 'query') ~> dimNormalAttractionIndex",
+						"source(output(",
+						"          cityDistance as decimal(23,17)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select * from dbo.dim_city_distance',",
+						"     format: 'query') ~> dimCityDistance",
+						"source(output(",
+						"          guestSatisfaction as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select * from dbo.dim_guest_satisfaction',",
+						"     format: 'query') ~> dimGuestSatisfaction",
+						"source(output(",
+						"          IsPrivate as boolean",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select * from dbo.dim_private_room',",
+						"     format: 'query') ~> dimPrivateRoom",
+						"source(output(",
+						"          IsShared as boolean",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select * from dbo.dim_shared_room',",
+						"     format: 'query') ~> dimSharedRoom",
+						"source(output(",
+						"          City as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select * from dbo.dim_city',",
+						"     format: 'query') ~> dimCity",
+						"airbnbCsv, dimprice lookup(airbnbCsv@Price == dimprice@Price,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1, dimDay lookup(Day == DayType,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup2",
+						"lookup2, dimRoomType lookup({Room Type} == RoomType,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup3",
+						"lookup3, dimPersonCapacity lookup({Person Capacity} == capacity,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup4",
+						"lookup4, dimCleanlessRating lookup({Cleanliness Rating} == clRating,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup5",
+						"lookup5, dimBedrooms lookup(airbnbCsv@Bedrooms == dimBedrooms@bedrooms,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup6",
+						"lookup6, dimMetroDistance lookup({Metro Distance (km)} == metroDistance,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup7",
+						"lookup7, dimNormalRestaurantIndex lookup({Normalised Restraunt Index} == normalRestaurantIndex,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup8",
+						"lookup8, dimNormalAttractionIndex lookup({Normalised Attraction Index} == normalAttractionIndex,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup9",
+						"lookup9, dimCityDistance lookup({City Center (km)} == cityDistance,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup10",
+						"lookup10, dimGuestSatisfaction lookup({Guest Satisfaction} == guestSatisfaction,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup11",
+						"lookup11, dimPrivateRoom lookup({Private Room} == IsPrivate,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup12",
+						"lookup12, dimSharedRoom lookup({Shared Room} == IsShared,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup13",
+						"lookup13, dimCity lookup(airbnbCsv@City == dimCity@City,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup14",
+						"lookup14 select(mapColumn(",
+						"          Superhost,",
+						"          MultipleRooms = {Multiple Rooms},",
+						"          Business,",
+						"          Price = dimprice@Price,",
+						"          DayType,",
+						"          RoomType,",
+						"          capacity,",
+						"          clRating,",
+						"          bedrooms = dimBedrooms@bedrooms,",
+						"          metroDistance,",
+						"          normalRestaurantIndex,",
+						"          normalAttractionIndex,",
+						"          cityDistance,",
+						"          guestSatisfaction,",
+						"          IsPrivate,",
+						"          IsShared,",
+						"          City = dimCity@City,",
+						"          AttractionIndex = {Attraction Index},",
+						"          RestrauntIndex = {Restraunt Index}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id_estancia as integer,",
+						"          City as string,",
+						"          Price as decimal(26,18),",
+						"          DayType as string,",
+						"          RoomType as string,",
+						"          IsShared as boolean,",
+						"          IsPrivate as boolean,",
+						"          capacity as integer,",
+						"          superhost as boolean,",
+						"          multipleRooms as boolean,",
+						"          clRating as integer,",
+						"          guestSatisfaction as integer,",
+						"          bedrooms as integer,",
+						"          cityDistance as decimal(23,17),",
+						"          metroDistance as decimal(22,17),",
+						"          AttractionIndex as decimal(21,18),",
+						"          normalAttractionIndex as decimal(21,18),",
+						"          normalRestaurantIndex as decimal(21,18),",
+						"          RestaurantIndex as decimal(21,18)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          City,",
+						"          Price,",
+						"          DayType,",
+						"          RoomType,",
+						"          IsShared,",
+						"          IsPrivate,",
+						"          capacity,",
+						"          superhost = Superhost,",
+						"          multipleRooms = MultipleRooms,",
+						"          clRating,",
+						"          guestSatisfaction,",
+						"          bedrooms,",
+						"          cityDistance,",
+						"          metroDistance,",
+						"          AttractionIndex,",
+						"          normalAttractionIndex,",
+						"          normalRestaurantIndex,",
+						"          RestaurantIndex = RestrauntIndex",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/etl_airbnb')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
+						"name": "df_dim_price",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_price",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_day",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_price",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_day",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_room_type",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_day",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_room_type",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_person_capacity",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_room_type",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_person_capacity",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_cleanless_rating",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_person_capacity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_cleanless_rating",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_bedrooms",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_cleanless_rating",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_bedrooms",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_metro_distance",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_bedrooms",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_metro_distance",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_normal_restaurant_index",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_metro_distance",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_normal_restaurant_index",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_normal_attraction_index",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_normal_restaurant_index",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_normal_attraction_index",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_city_distance",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_normal_attraction_index",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_city_distance",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_guest_satisfaction",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_city_distance",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dim_guest_satisfaction",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_private_room",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_guest_satisfaction",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_private_room",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_shared_room",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_private_room",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_shared_room",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_city",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_shared_room",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -1124,6 +2047,57 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "hechos_estancias",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_city",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_HECHOS_ESTANCIAS_v2",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"airbnbCsv": {},
+									"dimprice": {},
+									"dimDay": {},
+									"dimRoomType": {},
+									"dimPersonCapacity": {},
+									"dimCleanlessRating": {},
+									"dimBedrooms": {},
+									"dimMetroDistance": {},
+									"dimNormalRestaurantIndex": {},
+									"dimNormalAttractionIndex": {},
+									"dimCityDistance": {},
+									"dimGuestSatisfaction": {},
+									"dimPrivateRoom": {},
+									"dimSharedRoom": {},
+									"dimCity": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -1131,7 +2105,21 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_dim_price')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_day')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_room_type')]",
+				"[concat(variables('factoryId'), '/dataflows/df_person_capacity')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_cleanless_rating')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_metro_distance')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_normal_restaurant_index')]",
+				"[concat(variables('factoryId'), '/dataflows/df_normal_attraction_index')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_city_distance')]",
+				"[concat(variables('factoryId'), '/dataflows/dim_guest_satisfaction')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_private_room')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_shared_room')]",
+				"[concat(variables('factoryId'), '/dataflows/df_HECHOS_ESTANCIAS_v2')]"
+			]
 		}
 	]
 }
